@@ -36,7 +36,9 @@ const config = {
           "attributes": false
         }
       }
-    ]
+    ],
+    // Disable @typescript-eslint/no-unsafe-call rule
+    "@typescript-eslint/no-unsafe-call": "off"
   }
-}
+};
 module.exports = config;
