@@ -1,128 +1,323 @@
-"use client";
+  'use client'
 
-import { useState, useEffect } from "react";
-import Papa from "papaparse";
-import SmartHomeIntegration from "../EnergyAnalyzer/components/SmartHomeIntegration";
-import EnergyConsumptionInsights from "../EnergyAnalyzer/components/EnergyConsumptionInsights";
-import OfficeCarbonTracker from "../EnergyAnalyzer/components/OfficeCarbonTracker";
-import EcoFriendlySupplies from "../EnergyAnalyzer/components/EcoFriendlySupplies";
+  import { useState, useEffect } from 'react'
+  import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+  import { Button } from "@/components/ui/button"
+  import { Input } from "@/components/ui/input"
+  import { Label } from "@/components/ui/label"
+  import { Switch } from "@/components/ui/switch"
+  import { Slider } from "@/components/ui/slider"
+  import { Bar } from 'react-chartjs-2'
+  import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'
+  import { Lightbulb, Tv, Computer, Fan, Thermometer, PlusCircle, X } from 'lucide-react'
+  import CarbonEmissionPredictor from '../EnergyAnalyzer/components/CarbonEmissionPredictor'
 
-// Sample data structure for testing
-const sampleData = [
-  { device_id: "dev1", device_type: "Light", energy_consumption: 0.5, usage_time: 8, room: "Living Room", efficiency_rating: 4.5 },
-  { device_id: "dev2", device_type: "TV", energy_consumption: 2.1, usage_time: 6, room: "Living Room", efficiency_rating: 3.8 },
-  { device_id: "dev3", device_type: "Computer", energy_consumption: 1.8, usage_time: 10, room: "Office", efficiency_rating: 4.0 },
-  { device_id: "dev4", device_type: "Fan", energy_consumption: 0.8, usage_time: 12, room: "Bedroom", efficiency_rating: 4.2 },
-  { device_id: "dev5", device_type: "Thermostat", energy_consumption: 3.0, usage_time: 24, room: "Office", efficiency_rating: 3.5 }
-];
+  ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
-interface DeviceData {
-  device_id: string;
-  device_type: string;
-  energy_consumption: number;
-  usage_time: number;
-  room: string;
-  efficiency_rating: number;
-}
-
-export default function Home() {
-  const [deviceData, setDeviceData] = useState<DeviceData[]>([]);
-  const [activeDevices, setActiveDevices] = useState<{ [key: string]: boolean }>({});
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const response = await fetch('./../../../public/smart_home_data.csv');
-
-        if (!response.ok) {
-          console.warn('CSV file not found, using sample data');
-          setDeviceData(sampleData);
-          initializeActiveDevices(sampleData);
-          return;
-        }
-
-        const csvString = await response.text();
-        const result = Papa.parse<DeviceData>(csvString, {
-          header: true,
-          dynamicTyping: true,
-          skipEmptyLines: true,
-          transform: (value, field) => {
-            if (field === 'energy_consumption' || field === 'usage_time' || field === 'efficiency_rating') {
-              return Number(value);
-            }
-            return value;
-          },
-        });
-
-        if (result.errors.length > 0) {
-          console.error('CSV parsing errors:', result.errors);
-          throw new Error('Error parsing CSV: ' + result.errors[0].message);
-        }
-
-        setDeviceData(result.data);
-        initializeActiveDevices(result.data);
-      } catch (err) {
-        console.warn('Error loading CSV, using sample data:', err);
-        setDeviceData(sampleData);
-        initializeActiveDevices(sampleData);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const initializeActiveDevices = (data: DeviceData[]) => {
-    const initialStates = data.reduce((acc, device) => {
-      acc[device.device_id] = true; // Assume all devices are active initially
-      return acc;
-    }, {} as { [key: string]: boolean });
-    setActiveDevices(initialStates);
-  };
-
-  const handleToggleDevice = (deviceId: string) => {
-    setActiveDevices((prevState) => {
-      const newState = { ...prevState, [deviceId]: !prevState[deviceId] };
-      const updatedDeviceData = deviceData.map((device) => ({
-        ...device,
-        energy_consumption: newState[device.device_id] ? device.energy_consumption : 0, // Set consumption to 0 if turned off
-      }));
-      setDeviceData(updatedDeviceData);
-      return newState;
-    });
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-          <p className="mt-4 text-gray-600">Loading device data...</p>
-        </div>
-      </div>
-    );
+  interface DeviceData {
+    device_id: string
+    device_type: string
+    energy_consumption: number
+    usage_time: number
+    room: string
+    efficiency_rating: number
+    is_on: boolean
   }
 
-  return (
-    <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
-      <div className="relative py-3 sm:max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-6xl mx-auto">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-light-blue-500 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
-        <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
-          <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">Smart Home Energy Dashboard</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <SmartHomeIntegration deviceData={deviceData} activeDevices={activeDevices} onToggleDevice={handleToggleDevice} />
-            <EnergyConsumptionInsights deviceData={deviceData} />
-            <OfficeCarbonTracker deviceData={deviceData} />
-            <EcoFriendlySupplies />
+  interface Notification {
+    id: number
+    message: string
+    type: 'success' | 'error'
+  }
+
+  const deviceIcons: { [key: string]: React.ReactNode } = {
+    'Light': <Lightbulb className="w-4 h-4 mr-2" />,
+    'TV': <Tv className="w-4 h-4 mr-2" />,
+    'Computer': <Computer className="w-4 h-4 mr-2" />,
+    'Fan': <Fan className="w-4 h-4 mr-2" />,
+    'Thermostat': <Thermometer className="w-4 h-4 mr-2" />,
+  }
+
+  const deviceTypes = ['Light', 'TV', 'Computer', 'Fan', 'Thermostat']
+  const rooms = ['Living Room', 'Bedroom', 'Office', 'Kitchen', 'Bathroom']
+
+  export default function EnhancedDashboard() {
+    const [deviceData, setDeviceData] = useState<DeviceData[]>([])
+    const [newDevice, setNewDevice] = useState({
+      device_type: deviceTypes[0],
+      room: rooms[0],
+      energy_consumption: '',
+      usage_time: '',
+      efficiency_rating: 5
+    })
+    const [notifications, setNotifications] = useState<Notification[]>([])
+
+    useEffect(() => {
+      const savedDevices = localStorage.getItem('smartHomeDevices')
+      if (savedDevices) {
+        setDeviceData(JSON.parse(savedDevices))
+      }
+    }, [])
+
+    useEffect(() => {
+      localStorage.setItem('smartHomeDevices', JSON.stringify(deviceData))
+    }, [deviceData])
+
+    const addNotification = (message: string, type: 'success' | 'error') => {
+      const id = Date.now()
+      setNotifications(prev => [...prev, { id, message, type }])
+      setTimeout(() => {
+        setNotifications(prev => prev.filter(notification => notification.id !== id))
+      }, 5000)
+    }
+
+    const removeNotification = (id: number) => {
+      setNotifications(prev => prev.filter(notification => notification.id !== id))
+    }
+
+    const addDevice = () => {
+      const energyConsumption = parseFloat(newDevice.energy_consumption)
+      const usageTime = parseFloat(newDevice.usage_time)
+
+      if (isNaN(energyConsumption) || isNaN(usageTime) || energyConsumption < 0 || usageTime < 0) {
+        addNotification("Please enter valid positive numbers for energy consumption and usage time.", "error")
+        return
+      }
+
+      if (usageTime > 24) {
+        addNotification("Usage time cannot exceed 24 hours per day.", "error")
+        return
+      }
+
+      const device: DeviceData = {
+        device_id: `device-${Date.now()}`,
+        device_type: newDevice.device_type,
+        room: newDevice.room,
+        energy_consumption: energyConsumption,
+        usage_time: usageTime,
+        efficiency_rating: newDevice.efficiency_rating,
+        is_on: true
+      }
+      setDeviceData([...deviceData, device])
+      setNewDevice({
+        device_type: deviceTypes[0],
+        room: rooms[0],
+        energy_consumption: '',
+        usage_time: '',
+        efficiency_rating: 5
+      })
+      addNotification(`${device.device_type} has been added to ${device.room}.`, "success")
+    }
+
+    const handleToggleDevice = (deviceId: string) => {
+      setDeviceData(prevData =>
+        prevData.map(device =>
+          device.device_id === deviceId ? { ...device, is_on: !device.is_on } : device
+        )
+      )
+    }
+
+    const handleAdjustThermostat = (deviceId: string, value: number) => {
+      setDeviceData(prevData =>
+        prevData.map(device =>
+          device.device_id === deviceId ? { ...device, energy_consumption: parseFloat((value * 0.1).toFixed(2)) } : device
+        )
+      )
+    }
+
+    const getTotalEnergyConsumption = () =>
+      parseFloat(deviceData.reduce((sum, device) => sum + (device.is_on ? device.energy_consumption : 0), 0).toFixed(2))
+
+    const getEnergyConsumptionByRoom = () => {
+      const roomData: { [key: string]: number } = {}
+      deviceData.forEach(device => {
+        if (!roomData[device.room]) roomData[device.room] = 0
+        if (device.is_on) roomData[device.room] += device.energy_consumption
+      })
+      return Object.fromEntries(
+        Object.entries(roomData).map(([room, consumption]) => [room, parseFloat(consumption.toFixed(2))])
+      )
+    }
+
+    const renderEnergyConsumptionChart = () => {
+      const roomData = getEnergyConsumptionByRoom()
+      const chartData = {
+        labels: Object.keys(roomData),
+        datasets: [{
+          label: 'Energy Consumption (kWh)',
+          data: Object.values(roomData),
+          backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        }],
+      }
+
+      return <Bar data={chartData} options={{ responsive: true }} />
+    }
+
+    const renderDeviceForm = () => (
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="device-type">Device Type</Label>
+            <select
+              id="device-type"
+              className="w-full p-2 border rounded"
+              value={newDevice.device_type}
+              onChange={(e) => setNewDevice({ ...newDevice, device_type: e.target.value })}
+            >
+              {deviceTypes.map(type => (
+                <option key={type} value={type}>{type}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <Label htmlFor="room">Room</Label>
+            <select
+              id="room"
+              className="w-full p-2 border rounded"
+              value={newDevice.room}
+              onChange={(e) => setNewDevice({ ...newDevice, room: e.target.value })}
+            >
+              {rooms.map(room => (
+                <option key={room} value={room}>{room}</option>
+              ))}
+            </select>
           </div>
         </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="energy-consumption">Energy Consumption (kWh)</Label>
+            <Input
+              id="energy-consumption"
+              type="number"
+              min="0"
+              step="0.01"
+              value={newDevice.energy_consumption}
+              onChange={(e) => setNewDevice({ ...newDevice, energy_consumption: e.target.value })}
+              placeholder="Enter energy consumption"
+            />
+          </div>
+          <div>
+            <Label htmlFor="usage-time">Usage Time (hours/day)</Label>
+            <Input
+              id="usage-time"
+              type="number"
+              min="0"
+              max="24"
+              step="0.1"
+              value={newDevice.usage_time}
+              onChange={(e) => setNewDevice({ ...newDevice, usage_time: e.target.value })}
+              placeholder="Enter usage time"
+            />
+          </div>
+        </div>
+        <div>
+          <Label htmlFor="efficiency">Efficiency Rating (1-10)</Label>
+          <div className="flex items-center space-x-2">
+            <Slider
+              id="efficiency"
+              min={1}
+              max={10}
+              step={1}
+              value={[newDevice.efficiency_rating]}
+              onValueChange={(value) => setNewDevice({ ...newDevice, efficiency_rating: value[0] })}
+              className="flex-grow"
+            />
+            <span className="w-8 text-center">{newDevice.efficiency_rating}</span>
+          </div>
+        </div>
+        <Button onClick={addDevice} className="w-full">
+          <PlusCircle className="w-4 h-4 mr-2" />
+          Add Device
+        </Button>
       </div>
-    </div>
-  );
-}
+    )
+
+    const renderDeviceList = () => (
+      <div className="space-y-4">
+        {deviceData.map(device => (
+          <div key={device.device_id} className="flex items-center justify-between p-2 border rounded">
+            <div className="flex items-center">
+              {deviceIcons[device.device_type]}
+              <div className="ml-2">
+                <p className="font-medium">{device.device_type}</p>
+                <p className="text-sm text-gray-600">{device.room}</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <p className="text-sm">{device.energy_consumption.toFixed(2)} kWh</p>
+              {device.device_type === 'Thermostat' ? (
+                <>
+                  <Slider
+                    min={15}
+                    max={30}
+                    step={0.5}
+                    value={[device.energy_consumption * 10]}
+                    onValueChange={(value) => handleAdjustThermostat(device.device_id, value[0])}
+                    className="w-24"
+                  />
+                  <span className="ml-2">{(device.energy_consumption * 10).toFixed(1)}°C</span>
+                </>
+              ) : (
+                <Switch
+                  checked={device.is_on}
+                  onCheckedChange={() => handleToggleDevice(device.device_id)}
+                />
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+
+    const renderNotifications = () => (
+      <div className="fixed top-4 right-4 z-50">
+        {notifications.map(notification => (
+          <div
+            key={notification.id}
+            className={`mb-2 p-4 rounded-md shadow-md flex items-center justify-between ${
+              notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+            } text-white`}
+          >
+            <span>{notification.message}</span>
+            <button
+              onClick={() => removeNotification(notification.id)}
+              className="ml-4 text-white hover:text-gray-200"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ))}
+      </div>
+    )
+
+    return (
+      <div className="container mx-auto p-4">
+        <h1 className="text-3xl font-bold mb-6">Smart Home Energy Dashboard</h1>
+        {renderNotifications()}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Add New Device</CardTitle>
+            </CardHeader>
+            <CardContent>{renderDeviceForm()}</CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Device Control</CardTitle>
+            </CardHeader>
+            <CardContent>{renderDeviceList()}</CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Energy Consumption Overview</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="mb-4">Total Energy Consumption: {getTotalEnergyConsumption()} kWh</p>
+              {renderEnergyConsumptionChart()}
+            </CardContent>
+          </Card>
+          <CarbonEmissionPredictor deviceData={deviceData} />
+        </div>
+      </div>
+    )
+  }
