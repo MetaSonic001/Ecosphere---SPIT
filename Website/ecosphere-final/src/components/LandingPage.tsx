@@ -7,14 +7,6 @@ import {
   CardDescription,
 } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "../components/ui/navigation-menu";
 import { Globe2, Leaf, Activity, Target, Users, Heart } from "lucide-react";
 
 const LandingPage = () => {
@@ -72,82 +64,6 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Navigation Bar */}
-      <nav className="border-b">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <Leaf className="w-6 h-6 text-green-500" />
-              <span className="text-xl font-bold">EcoTracker</span>
-            </div>
-
-            <NavigationMenu>
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger>Features</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
-                      {features.map((feature) => (
-                        <li key={feature.title} className="row-span-3">
-                          <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                            <div className="flex items-center gap-2">
-                              {feature.icon}
-                              <div className="text-sm font-medium leading-none">
-                                {feature.title}
-                              </div>
-                            </div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                              {feature.description}
-                            </p>
-                          </NavigationMenuLink>
-                        </li>
-                      ))}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger>Community</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid gap-3 p-6 md:w-[400px]">
-                      <li className="row-span-3">
-                        <NavigationMenuLink className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md">
-                          <Users className="h-6 w-6" />
-                          <div className="mb-2 mt-4 text-lg font-medium">
-                            Join the Movement
-                          </div>
-                          <p className="text-sm leading-tight text-muted-foreground">
-                            Connect with eco-conscious individuals and
-                            participate in global initiatives.
-                          </p>
-                        </NavigationMenuLink>
-                      </li>
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger>About</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid gap-3 p-6 md:w-[400px]">
-                      <li className="row-span-3">
-                        <p className="text-sm text-muted-foreground">
-                          We&apos;re on a mission to make environmental impact
-                          tracking accessible and actionable for everyone.
-                        </p>
-                      </li>
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
-
-            <div className="flex items-center space-x-4">
-              <Button variant="outline">Sign In</Button>
-              <Button>Sign Up</Button>
-            </div>
-          </div>
-        </div>
-      </nav>
-
       {/* Hero Section */}
       <section className="bg-gradient-to-b from-white to-gray-50 py-20">
         <div className="container mx-auto px-4 text-center">
