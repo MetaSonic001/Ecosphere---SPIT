@@ -10,6 +10,67 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+
+model User {
+  id                 String              @id @default(cuid())
+  email              String              @unique
+  name               String?
+  activities         Activity[]
+  habits             Habit[]
+  userChallenges     UserChallenge[]
+  ecoFitnessActivities EcoFitnessActivity[]
+}
+
+model Activity {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  value     Float
+  unit      String
+  timestamp DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Challenge {
+  id             String          @id @default(cuid())
+  name           String
+  description    String
+  startDate      DateTime
+  endDate        DateTime
+  userChallenges UserChallenge[]
+}
+
+model UserChallenge {
+  id          String    @id @default(cuid())
+  userId      String
+  challengeId String
+  progress    Float
+  joinedAt    DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id])
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+
+  @@unique([userId, challengeId])
+}
+
+model Habit {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model EcoFitnessActivity {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  duration  Int
+  distance  Float
+  timestamp DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
 model Post {
     id        Int      @id @default(autoincrement())
     name      String
@@ -33,4 +94,25 @@ model ConsumptionData {
   name     String
   consumed Int
   wasted   Int
+}
+
+
+model Inventory {
+  id         Int      @id @default(autoincrement())
+  name       String
+  quantity   Int
+  category   String
+  expiryDate DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model DonationCenter {
+  id          Int      @id @default(autoincrement())
+  name        String
+  location    String
+  contact     String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
