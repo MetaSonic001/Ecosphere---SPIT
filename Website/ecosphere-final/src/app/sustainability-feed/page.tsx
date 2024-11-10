@@ -1,4 +1,4 @@
-import SustainabilityFeed from "../components/SustainabilityFeed";
+import SustainabilityFeed from "../../components/SustainabilityFeed";
 
 export default function SustainabilityFeedPage() {
   return (
