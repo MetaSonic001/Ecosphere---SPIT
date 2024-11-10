@@ -1,45 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 
-// Sample events
-const events = [
-  {
-    date: "2024-11-10",
-    title: "Clean-Up Drive",
-    description:
-      "Neighborhood clean-up drive. Join us to make our streets cleaner!",
-    time: "10:00 AM",
-    location: "Main Park",
-  },
-  {
-    date: "2024-11-15",
-    title: "Tree Planting",
-    description: "Help us plant trees and beautify the neighborhood.",
-    time: "9:00 AM",
-    location: "West Park",
-  },
-  {
-    date: "2024-11-20",
-    title: "Recycling Initiative",
-    description: "Collect recyclables and help the environment.",
-    time: "5:00 PM",
-    location: "City Center",
-  },
-  {
-    date: "2024-11-25",
-    title: "Beach Clean-Up",
-    description: "Join us for a beach clean-up to preserve marine life.",
-    time: "8:00 AM",
-    location: "Sunset Beach",
-  },
-];
+interface Event {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  location: string;
+}
 
 export default function ParticipatePage() {
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [eventDetails, setEventDetails] = useState<any>(null);
+  const [eventDetails, setEventDetails] = useState<Event | null>(null);
 
   // Get current month
   const currentMonth = dayjs().format("MMMM YYYY");
@@ -47,14 +25,39 @@ export default function ParticipatePage() {
   const endOfMonth = dayjs().endOf("month");
   const daysInMonth = endOfMonth.date();
 
+  // Fetch events
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `/api/events?month=${dayjs().format("YYYY-MM")}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch events");
+        }
+        const data = await response.json();
+        setEvents(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
   // Get all the events for the current month
   const monthlyEvents = events.filter(
-    (event) => dayjs(event.date).month() === dayjs().month(),
+    (event) => dayjs(event.date).month() === dayjs().month()
   );
 
   // Handle click on a date to show event details
   const handleDateClick = (date: string) => {
-    const event = events.find((event) => event.date === date);
+    const event = events.find(
+      (event) => dayjs(event.date).format("YYYY-MM-DD") === date
+    );
     if (event) {
       setEventDetails(event);
       setShowModal(true);
@@ -66,7 +69,9 @@ export default function ParticipatePage() {
     const calendarDays = [];
     for (let i = 1; i <= daysInMonth; i++) {
       const date = dayjs().date(i).format("YYYY-MM-DD");
-      const isEventDay = events.some((event) => event.date === date);
+      const isEventDay = events.some(
+        (event) => dayjs(event.date).format("YYYY-MM-DD") === date
+      );
       calendarDays.push(
         <div
           key={i}
@@ -79,11 +84,27 @@ export default function ParticipatePage() {
           {isEventDay && (
             <span className="absolute right-0 top-0 h-2 w-2 rounded-full bg-red-500" />
           )}
-        </div>,
+        </div>
       );
     }
     return calendarDays;
   };
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-xl">Loading events...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-xl text-red-500">Error: {error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center p-8">
@@ -102,8 +123,8 @@ export default function ParticipatePage() {
         {monthlyEvents.length === 0 ? (
           <p>No upcoming events this month.</p>
         ) : (
-          monthlyEvents.map((event, index) => (
-            <div key={index} className="border-b py-2">
+          monthlyEvents.map((event) => (
+            <div key={event.id} className="border-b py-2">
               <h4 className="font-semibold">{event.title}</h4>
               <p>
                 {event.time} | {event.location}
@@ -119,7 +140,9 @@ export default function ParticipatePage() {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="w-96 rounded-lg bg-white p-6">
             <h3 className="text-2xl font-semibold">{eventDetails.title}</h3>
-            <p className="text-sm text-gray-600">{eventDetails.date}</p>
+            <p className="text-sm text-gray-600">
+              {dayjs(eventDetails.date).format("YYYY-MM-DD")}
+            </p>
             <p className="mt-4">{eventDetails.description}</p>
             <p className="mt-2 font-semibold">
               Location: {eventDetails.location}
