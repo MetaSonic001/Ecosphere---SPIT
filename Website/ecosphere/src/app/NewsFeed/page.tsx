@@ -1,4 +1,4 @@
-import NewsFeed from "../components/NewsFeed";
+import NewsFeed from "../Carbon/components/NewsFeed";
 
 export default function Home() {
   return <NewsFeed />;

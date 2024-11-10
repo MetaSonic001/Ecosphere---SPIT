@@ -24,7 +24,7 @@ const LandingPage = () => {
       title: "Personal Carbon Footprint Tracker",
       description:
         "Track and analyze your daily carbon emissions through activities like travel, energy usage, and consumption.",
-      icon: <Activity className="w-10 h-10 text-green-500" />,
+      icon: <Activity className="h-10 w-10 text-green-500" />,
       highlights: [
         "Activity logging and monitoring",
         "Smart device integration",
@@ -36,7 +36,7 @@ const LandingPage = () => {
       title: "Global Environmental Metrics",
       description:
         "Stay informed about critical environmental trends and their impact on our planet.",
-      icon: <Globe2 className="w-10 h-10 text-blue-500" />,
+      icon: <Globe2 className="h-10 w-10 text-blue-500" />,
       highlights: [
         "Real-time environmental data",
         "Country sustainability rankings",
@@ -48,7 +48,7 @@ const LandingPage = () => {
       title: "Eco-Friendly Challenges",
       description:
         "Join community challenges and develop sustainable habits through gamified experiences.",
-      icon: <Target className="w-10 h-10 text-purple-500" />,
+      icon: <Target className="h-10 w-10 text-purple-500" />,
       highlights: [
         "Monthly sustainability challenges",
         "Habit tracking system",
@@ -60,7 +60,7 @@ const LandingPage = () => {
       title: "Green Fitness Tracking",
       description:
         "Transform your fitness routine into environmental action with our eco-fitness tracking.",
-      icon: <Heart className="w-10 h-10 text-red-500" />,
+      icon: <Heart className="h-10 w-10 text-red-500" />,
       highlights: [
         "Carbon-saving workouts",
         "Green route suggestions",
@@ -71,13 +71,13 @@ const LandingPage = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex min-h-screen flex-col">
       {/* Navigation Bar */}
       <nav className="border-b">
         <div className="container mx-auto px-4 py-3">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Leaf className="w-6 h-6 text-green-500" />
+              <Leaf className="h-6 w-6 text-green-500" />
               <span className="text-xl font-bold">EcoTracker</span>
             </div>
 
@@ -151,10 +151,10 @@ const LandingPage = () => {
       {/* Hero Section */}
       <section className="bg-gradient-to-b from-white to-gray-50 py-20">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+          <h1 className="mb-6 text-4xl font-bold md:text-6xl">
             Track Your Environmental Impact
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="mx-auto mb-8 max-w-2xl text-xl text-gray-600">
             Join millions of people making a difference through personal
             environmental tracking and sustainable living.
           </p>
@@ -170,8 +170,8 @@ const LandingPage = () => {
       {/* Features Section */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Features</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <h2 className="mb-12 text-center text-3xl font-bold">Our Features</h2>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
             {features.map((feature) => (
               <Card key={feature.title} className="relative overflow-hidden">
                 <CardHeader>
@@ -183,7 +183,7 @@ const LandingPage = () => {
                   <ul className="space-y-2">
                     {feature.highlights.map((highlight) => (
                       <li key={highlight} className="flex items-center gap-2">
-                        <Leaf className="w-4 h-4 text-green-500" />
+                        <Leaf className="h-4 w-4 text-green-500" />
                         <span className="text-sm">{highlight}</span>
                       </li>
                     ))}
@@ -198,17 +198,17 @@ const LandingPage = () => {
       {/* Stats Section */}
       <section className="bg-gray-50 py-20">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+          <div className="grid grid-cols-1 gap-8 text-center md:grid-cols-3">
             <div>
-              <h3 className="text-4xl font-bold text-green-500 mb-2">1M+</h3>
+              <h3 className="mb-2 text-4xl font-bold text-green-500">1M+</h3>
               <p className="text-gray-600">Active Users</p>
             </div>
             <div>
-              <h3 className="text-4xl font-bold text-green-500 mb-2">50K+</h3>
+              <h3 className="mb-2 text-4xl font-bold text-green-500">50K+</h3>
               <p className="text-gray-600">Trees Planted</p>
             </div>
             <div>
-              <h3 className="text-4xl font-bold text-green-500 mb-2">100K+</h3>
+              <h3 className="mb-2 text-4xl font-bold text-green-500">100K+</h3>
               <p className="text-gray-600">Carbon Tons Saved</p>
             </div>
           </div>
@@ -218,30 +218,32 @@ const LandingPage = () => {
       {/* CTA Section */}
       <section className="py-20">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">
+          <h2 className="mb-6 text-3xl font-bold">
             Ready to Make a Difference?
           </h2>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="mx-auto mb-8 max-w-2xl text-xl text-gray-600">
             Join our community of environmentally conscious individuals and
             start tracking your impact today.
           </p>
-          <Button size="lg">Get Started Now</Button>
+          <SignUp>
+            <Button size="lg">Get Started Now</Button>
+          </SignUp>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 mt-auto">
+      <footer className="mt-auto bg-gray-900 py-12 text-white">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
             <div>
-              <h3 className="text-lg font-bold mb-4">EcoTracker</h3>
+              <h3 className="mb-4 text-lg font-bold">EcoTracker</h3>
               <p className="text-gray-400">
                 Making environmental impact tracking accessible and actionable
                 for everyone.
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-bold mb-4">Features</h3>
+              <h3 className="mb-4 text-lg font-bold">Features</h3>
               <ul className="space-y-2">
                 <li>Carbon Footprint Tracker</li>
                 <li>Global Metrics</li>
@@ -250,7 +252,7 @@ const LandingPage = () => {
               </ul>
             </div>
             <div>
-              <h3 className="text-lg font-bold mb-4">Company</h3>
+              <h3 className="mb-4 text-lg font-bold">Company</h3>
               <ul className="space-y-2">
                 <li>About Us</li>
                 <li>Blog</li>
@@ -259,7 +261,7 @@ const LandingPage = () => {
               </ul>
             </div>
             <div>
-              <h3 className="text-lg font-bold mb-4">Connect</h3>
+              <h3 className="mb-4 text-lg font-bold">Connect</h3>
               <ul className="space-y-2">
                 <li>Twitter</li>
                 <li>LinkedIn</li>
@@ -268,7 +270,7 @@ const LandingPage = () => {
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+          <div className="mt-8 border-t border-gray-800 pt-8 text-center text-gray-400">
             <p>&copy; 2024 EcoTracker. All rights reserved.</p>
           </div>
         </div>
