@@ -7,7 +7,16 @@ import { Button } from "../../../../components/ui/button"
 import { Checkbox } from "../../../../components/ui/checkbox"
 import { Input } from "../../../../components/ui/input"
 import { Label } from "../../../../components/ui/label"
-const ProductCard = ({ id, name, price, image, tag, unit }) => {
+interface ProductCardProps {
+  id: string;
+  name: string;
+  price: string;
+  image: string;
+  tag: string;
+  unit: string;
+}
+
+const ProductCard: React.FC<ProductCardProps> = ({ id, name, price, image, tag, unit }) => {
   const [quantity, setQuantity] = useState(1);
 
   const increaseQuantity = () => setQuantity(prev => prev + 1);
