@@ -18,3 +18,19 @@ model Post {
 
     @@index([name])
 }
+
+model FoodItem {
+  id            Int      @id @default(autoincrement())
+  name          String
+  type          String
+  expirationDate DateTime
+  quantity      Int
+  opened        Boolean  @default(false)
+}
+
+model ConsumptionData {
+  id       Int    @id @default(autoincrement())
+  name     String
+  consumed Int
+  wasted   Int
+}
